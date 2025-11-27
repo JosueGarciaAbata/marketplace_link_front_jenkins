@@ -9,10 +9,10 @@ pipeline {
         // Contenedor donde correrá el frontend
         CONTAINER_NAME = "marketplace_front"
 
-        // Red Docker donde está backend y BD
+        // Red Docker donde están backend y BD
         DOCKER_NETWORK = "mplink_net"
 
-        // URL hacia el backend
+        // URL hacia el backend (¡este se aplicará en runtime!)
         VITE_API_URL = "http://localhost:8090"
     }
 
@@ -22,7 +22,12 @@ pipeline {
             steps {
                 echo "Construyendo imagen del frontend..."
 
-                sh "docker build --build-arg VITE_API_URL=${VITE_API_URL} -t ${DOCKER_IMAGE_TAG} -f ${DOCKER_IMAGE_FILE} ."
+                // YA NO ENVIAMOS build-arg (frontend no lo usa)
+                sh """
+                docker build \
+                  -t ${DOCKER_IMAGE_TAG} \
+                  -f ${DOCKER_IMAGE_FILE} .
+                """
             }
         }
 
@@ -38,6 +43,7 @@ pipeline {
                   --name ${CONTAINER_NAME} \
                   --network ${DOCKER_NETWORK} \
                   -p 80:80 \
+                  -e VITE_API_URL=${VITE_API_URL} \
                   ${DOCKER_IMAGE_TAG}
                 """
             }
