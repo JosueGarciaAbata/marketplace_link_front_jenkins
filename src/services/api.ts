@@ -77,6 +77,15 @@ api.interceptors.response.use(
 
     if (status === 401) {
       if (!isLoginRequest(reqUrl)) {
+
+        console.log('[DEBUG LOGIN REQUEST]', {
+          'URL completa': config.baseURL + config.url,
+          'baseURL': config.baseURL,
+          'url': config.url,
+          'VITE_API_URL (build-time)': import.meta.env.VITE_API_URL,
+          'window.ENV?.VITE_API_URL (runtime)': window.ENV?.VITE_API_URL,
+        });
+        
         clearTokens();
         (globalThis as any).location.href = "/login";
         return Promise.reject(new ApiError({ message: "Unauthorized", status: 401 }));

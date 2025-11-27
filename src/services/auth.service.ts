@@ -55,7 +55,16 @@ export interface ResetPasswordResponse {
 
 const authService = {
   login: async (email: string, password: string): Promise<LoginResult> => {
-    const response = await api.post<LoginResponse>(`/login`, { email, password });
+    console.log("[DEBUG LOGIN] Antes de hacer petición:", {
+      "API Base URL": api.defaults.baseURL,
+      "VITE_API_URL (build-time)": import.meta.env.VITE_API_URL,
+      "window.ENV?.VITE_API_URL (runtime)": window.ENV?.VITE_API_URL,
+    });
+
+    const response = await api.post<LoginResponse>(`/login`, {
+      email,
+      password,
+    });
     const data = response.data;
 
     if (!data?.token) {
@@ -69,7 +78,8 @@ const authService = {
       if (profile) {
         setUserData({
           id: profile.id,
-          roles: profile.roles?.map((role: { name: string }) => role.name) || [],
+          roles:
+            profile.roles?.map((role: { name: string }) => role.name) || [],
           latitude: profile.latitude,
           longitude: profile.longitude,
         });
@@ -102,27 +112,39 @@ const authService = {
   },
 
   verifyEmail: async (token: string): Promise<VerifyEmailResponse> => {
-    const response = await api.get<VerifyEmailResponse>("/api/auth/verify-email", {
-      params: { token },
-    });
+    const response = await api.get<VerifyEmailResponse>(
+      "/api/auth/verify-email",
+      {
+        params: { token },
+      },
+    );
     return response.data;
   },
 
   resendVerification: async (token: string): Promise<VerifyEmailResponse> => {
     const response = await api.post<VerifyEmailResponse>(
-      `/api/auth/verify-email/resend?token=${encodeURIComponent(token)}`
+      `/api/auth/verify-email/resend?token=${encodeURIComponent(token)}`,
     );
     return response.data;
   },
 
   forgotPassword: async (email: string): Promise<ForgotPasswordResponse> => {
-    const response = await api.post<ForgotPasswordResponse>("/api/auth/password/forgot", { email });
+    const response = await api.post<ForgotPasswordResponse>(
+      "/api/auth/password/forgot",
+      { email },
+    );
     return response.data ?? null;
   },
 
-  resetPassword: async ({ token, newPassword }: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
+  resetPassword: async ({
+    token,
+    newPassword,
+  }: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
     const payload = { tokenValue: token, newPassword };
-    const response = await api.post<ResetPasswordResponse>("/api/auth/password/reset", payload);
+    const response = await api.post<ResetPasswordResponse>(
+      "/api/auth/password/reset",
+      payload,
+    );
     return response.data ?? null;
   },
 };
