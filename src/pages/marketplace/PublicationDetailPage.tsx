@@ -159,7 +159,7 @@ const PublicationDetailPage = () => {
   };
 
   // Construct image URLs
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+  const baseUrl = "http://localhost:8090";
 
   console.log("BASE URL", baseUrl);
 
