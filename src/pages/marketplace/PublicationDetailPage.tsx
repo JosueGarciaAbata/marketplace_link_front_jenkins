@@ -12,6 +12,7 @@ import {
   getTextSecondaryClasses,
   getBorderClasses,
 } from "@/lib/themeHelpers";
+import { getImageUrl } from "@/lib/imageUtils";
 
 const getAvailabilityColor = (availability: string): string => {
   switch (availability) {
@@ -148,18 +149,6 @@ const PublicationDetailPage = () => {
     );
   };
 
-  // Construct image URLs
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
-  const getImageUrl = (imageUrl: string) => {
-    // Si ya es una URL completa (http/https), retornarla directamente
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      // Decodificar la URL en caso de que tenga %2F u otros caracteres encoded
-      return decodeURIComponent(imageUrl);
-    }
-    // Si es una ruta relativa, construir la URL con el backend
-    const cleanFileName = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-    return `${baseUrl}/${cleanFileName}`;
-  };
 
   if (isLoading) {
     return (

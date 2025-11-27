@@ -26,6 +26,7 @@ import {
   getTextSecondaryClasses,
   getCardWithShadowClasses,
 } from "@/lib/themeHelpers";
+import { getImageUrl } from "@/lib/imageUtils";
 
 /**
  * VendorProductsPage - Página de gestión de publicaciones del vendedor
@@ -362,14 +363,8 @@ const VendorProductsPage = () => {
               {/* Publications Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {publications.map((publication) => {
-                  const baseUrl =
-                    import.meta.env.VITE_API_URL || "http://localhost:8080";
                   const imageFileName = publication.image?.url || "";
-                  
-                  // Si ya es una URL completa (Azure Blob Storage), decodificarla y usarla directamente
-                  const imageUrl = (imageFileName.startsWith('http://') || imageFileName.startsWith('https://'))
-                    ? decodeURIComponent(imageFileName)
-                    : `${baseUrl}/${imageFileName.startsWith("/") ? imageFileName.substring(1) : imageFileName}`;
+                  const imageUrl = getImageUrl(imageFileName);
 
                   return (
                     <div

@@ -6,6 +6,7 @@ import {
 } from "@/lib/themeHelpers";
 import { useEffect, useRef, useState } from "react";
 import ReportPublicationModal from "@/components/modals/ReportPublicationModal";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface PublicationImage {
   id: number;
@@ -64,13 +65,8 @@ const PublicationCard = ({
   const textSecondary = getTextSecondaryClasses(theme);
 
   // Construct image URL from backend
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
   const imageFileName = publication.image?.url || "";
-  
-  // Si ya es una URL completa (Azure Blob Storage), decodificarla y usarla directamente
-  const imageUrl = (imageFileName.startsWith('http://') || imageFileName.startsWith('https://'))
-    ? decodeURIComponent(imageFileName)
-    : `${baseUrl}/${imageFileName.startsWith("/") ? imageFileName.substring(1) : imageFileName}`;
+  const imageUrl = getImageUrl(imageFileName);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
