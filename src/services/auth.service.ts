@@ -55,12 +55,6 @@ export interface ResetPasswordResponse {
 
 const authService = {
   login: async (email: string, password: string): Promise<LoginResult> => {
-    console.log("[DEBUG LOGIN] Antes de hacer petición:", {
-      "API Base URL": api.defaults.baseURL,
-      "VITE_API_URL (build-time)": import.meta.env.VITE_API_URL,
-      "window.ENV?.VITE_API_URL (runtime)": window.ENV?.VITE_API_URL,
-    });
-
     const response = await api.post<LoginResponse>(`/login`, {
       email,
       password,
