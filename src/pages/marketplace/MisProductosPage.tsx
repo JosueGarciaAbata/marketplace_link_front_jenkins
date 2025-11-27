@@ -11,7 +11,6 @@ import {
   getTextSecondaryClasses,
   getCardWithShadowClasses,
 } from "@/lib/themeHelpers";
-import { getImageUrl } from "@/lib/imageUtils";
 
 /**
  * MisProductosPage - Página de gestión de publicaciones del vendedor
@@ -167,8 +166,13 @@ const MisProductosPage = () => {
               {/* Publications Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {publications.map((publication) => {
+                  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
                   const imageFileName = publication.image.url;
-                  const imageUrl = getImageUrl(imageFileName);
+                  
+                  // Si ya es una URL completa (Azure Blob Storage), decodificarla y usarla directamente
+                  const imageUrl = (imageFileName.startsWith('http://') || imageFileName.startsWith('https://'))
+                    ? decodeURIComponent(imageFileName)
+                    : `${baseUrl}/${imageFileName.startsWith('/') ? imageFileName.substring(1) : imageFileName}`;
 
                   return (
                     <div key={publication.id} className={`${cardClasses} rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300`}>

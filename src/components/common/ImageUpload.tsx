@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
-import { getImageUrl } from "@/lib/imageUtils";
 
 interface ImageUploadProps {
   onImagesChange: (files: File[]) => void;
@@ -87,6 +86,20 @@ const ImageUpload = ({
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+  };
+
+  // Construct full image URL
+  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8090";
+  const getImageUrl = (imageUrl: string) => {
+    // Si ya es una URL completa (Azure Blob Storage), retornarla decodificada
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+      return decodeURIComponent(imageUrl);
+    }
+    // Si es una ruta relativa, construir la URL con el backend
+    const cleanFileName = imageUrl.startsWith("/")
+      ? imageUrl.substring(1)
+      : imageUrl;
+    return `${baseUrl}/${cleanFileName}`;
   };
 
   const totalImages = existingImages.length + images.length;

@@ -9,7 +9,6 @@ import {
   getCardWithShadowClasses,
   getBorderClasses,
 } from "@/lib/themeHelpers";
-import { getImageUrl } from "@/lib/imageUtils";
 
 /**
  * FavoritosPage - Página de productos favoritos
@@ -127,6 +126,21 @@ const FavoritosPage = () => {
   };
 
   const hasActiveFilters = Boolean(searchName.trim() || dateFrom || dateTo);
+
+  // Función para construir URL de imagen desde el backend
+  const getImageUrl = (imageUrl: string): string => {
+    if (!imageUrl) return '';
+    
+    // Si ya es una URL completa, devolverla decodificada
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return decodeURIComponent(imageUrl);
+    }
+    
+    // Construir URL desde el backend
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const cleanFileName = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+    return `${baseUrl}/${cleanFileName}`;
+  };
 
   const onViewPublication = (publicationId: number) => {
     navigate(`/marketplace-refactored/publication/${publicationId}`);
