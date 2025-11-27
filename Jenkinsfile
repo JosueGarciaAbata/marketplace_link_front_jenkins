@@ -13,7 +13,7 @@ pipeline {
         DOCKER_NETWORK = "mplink_net"
 
         // URL hacia el backend
-        VITE_API_URL = "http://marketplace_backend:8080"
+        VITE_API_URL = "http://localhost:8090"
     }
 
     stages {
