@@ -34,18 +34,18 @@ const getAvailabilityDisplayName = (availability: string): string => {
 
 const getTimeAgo = (dateString: string): string => {
   // Formato del backend: "20/10/2025 14:50"
-  const [datePart, timePart] = dateString.split(' ');
-  const [day, month, year] = datePart.split('/');
-  const [hours, minutes] = timePart.split(':');
-  
+  const [datePart, timePart] = dateString.split(" ");
+  const [day, month, year] = datePart.split("/");
+  const [hours, minutes] = timePart.split(":");
+
   const publicationDate = new Date(
     parseInt(year),
     parseInt(month) - 1,
     parseInt(day),
     parseInt(hours),
-    parseInt(minutes)
+    parseInt(minutes),
   );
-  
+
   const now = new Date();
   const diffMs = now.getTime() - publicationDate.getTime();
   const diffMinutes = Math.floor(diffMs / 60000);
@@ -54,18 +54,21 @@ const getTimeAgo = (dateString: string): string => {
   const diffMonths = Math.floor(diffDays / 30);
   const diffYears = Math.floor(diffDays / 365);
 
-  if (diffMinutes < 1) return 'Hace un momento';
-  if (diffMinutes < 60) return `Hace ${diffMinutes} minuto${diffMinutes > 1 ? 's' : ''}`;
-  if (diffHours < 24) return `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
-  if (diffDays < 30) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
-  if (diffMonths < 12) return `Hace ${diffMonths} mes${diffMonths > 1 ? 'es' : ''}`;
-  return `Hace ${diffYears} año${diffYears > 1 ? 's' : ''}`;
+  if (diffMinutes < 1) return "Hace un momento";
+  if (diffMinutes < 60)
+    return `Hace ${diffMinutes} minuto${diffMinutes > 1 ? "s" : ""}`;
+  if (diffHours < 24)
+    return `Hace ${diffHours} hora${diffHours > 1 ? "s" : ""}`;
+  if (diffDays < 30) return `Hace ${diffDays} día${diffDays > 1 ? "s" : ""}`;
+  if (diffMonths < 12)
+    return `Hace ${diffMonths} mes${diffMonths > 1 ? "es" : ""}`;
+  return `Hace ${diffYears} año${diffYears > 1 ? "s" : ""}`;
 };
 
 const PublicationDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const context = useOutletContext<{ theme?: "light" | "dark" }>();
   const theme = context?.theme || "light";
 
@@ -77,19 +80,23 @@ const PublicationDetailPage = () => {
   const publicationId = id ? parseInt(id, 10) : 0;
 
   // Detectar de dónde viene el usuario (guardamos en sessionStorage cuando navega)
-  const fromMyProducts = sessionStorage.getItem('fromMyProducts') === 'true';
-  
+  const fromMyProducts = sessionStorage.getItem("fromMyProducts") === "true";
+
   // Función para volver atrás
   const handleGoBack = () => {
     if (fromMyProducts) {
-      sessionStorage.removeItem('fromMyProducts');
+      sessionStorage.removeItem("fromMyProducts");
       navigate("/marketplace-refactored/mis-productos");
     } else {
       navigate("/marketplace-refactored/publications");
     }
   };
 
-  const { data: publication, isLoading, error } = usePublicationDetail(publicationId);
+  const {
+    data: publication,
+    isLoading,
+    error,
+  } = usePublicationDetail(publicationId);
 
   // Favorite state & toggle for this publication (backend-driven)
   const {
@@ -103,16 +110,19 @@ const PublicationDetailPage = () => {
   const { data: relatedPublicationsData } = usePublications({
     page: 0,
     size: 5,
-    categoryIds: publication?.category.id ? [publication.category.id] : undefined,
+    categoryIds: publication?.category.id
+      ? [publication.category.id]
+      : undefined,
     lat: userLocation.latitude,
     lon: userLocation.longitude,
     distanceKm: 100,
   });
 
   // Filter out current publication and limit to 4
-  const relatedPublications = relatedPublicationsData?.content
-    .filter((p) => p.id !== publication?.id)
-    .slice(0, 4) || [];
+  const relatedPublications =
+    relatedPublicationsData?.content
+      .filter((p) => p.id !== publication?.id)
+      .slice(0, 4) || [];
 
   // Theme classes
   const cardClasses = getCardWithShadowClasses(theme);
@@ -128,7 +138,7 @@ const PublicationDetailPage = () => {
       setFavorites((prev) =>
         prev.includes(publication.id)
           ? prev.filter((id) => id !== publication.id)
-          : [...prev, publication.id]
+          : [...prev, publication.id],
       );
     } catch (err) {
       console.error("Error toggling favorite:", err);
@@ -144,20 +154,25 @@ const PublicationDetailPage = () => {
     setFavorites((prev) =>
       prev.includes(pub.id)
         ? prev.filter((id) => id !== pub.id)
-        : [...prev, pub.id]
+        : [...prev, pub.id],
     );
   };
 
   // Construct image URLs
   const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+  console.log("BASE URL", baseUrl);
+
   const getImageUrl = (imageUrl: string) => {
     // Si ya es una URL completa (http/https), retornarla directamente
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
       // Decodificar la URL en caso de que tenga %2F u otros caracteres encoded
       return decodeURIComponent(imageUrl);
     }
     // Si es una ruta relativa, construir la URL con el backend
-    const cleanFileName = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+    const cleanFileName = imageUrl.startsWith("/")
+      ? imageUrl.substring(1)
+      : imageUrl;
     return `${baseUrl}/${cleanFileName}`;
   };
 
@@ -238,7 +253,9 @@ const PublicationDetailPage = () => {
 
             {/* Imagen principal */}
             <div className="flex-1 flex flex-col">
-              <div className={`${cardClasses} relative bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center h-full`}>
+              <div
+                className={`${cardClasses} relative bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center h-full`}
+              >
                 {currentImage ? (
                   <img
                     src={getImageUrl(currentImage.url)}
@@ -287,11 +304,14 @@ const PublicationDetailPage = () => {
 
         {/* Columna Derecha - Información del Producto */}
         <div className="lg:col-span-7">
-          <div className={`${cardClasses} flex flex-col overflow-y-auto h-[600px]`}>
+          <div
+            className={`${cardClasses} flex flex-col overflow-y-auto h-[600px]`}
+          >
             {/* Título, código y fecha */}
             <div className="mb-4">
               <p className={`${textSecondary} text-xs mb-1`}>
-                {getTimeAgo(publication.publicationDate)} | Código: <span className="font-mono">{publication.code}</span>
+                {getTimeAgo(publication.publicationDate)} | Código:{" "}
+                <span className="font-mono">{publication.code}</span>
               </p>
               <h1 className={`${textPrimary} text-2xl lg:text-3xl font-bold`}>
                 {publication.name}
@@ -300,7 +320,9 @@ const PublicationDetailPage = () => {
 
             {/* Precio */}
             <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-              <span className={`${textPrimary} text-4xl lg:text-5xl font-bold text-[#FF9900]`}>
+              <span
+                className={`${textPrimary} text-4xl lg:text-5xl font-bold text-[#FF9900]`}
+              >
                 ${publication.price.toFixed(2)}
               </span>
             </div>
@@ -310,10 +332,12 @@ const PublicationDetailPage = () => {
               <h2 className={`${textPrimary} text-lg font-semibold mb-3`}>
                 Descripción
               </h2>
-              <p className={`${textSecondary} leading-relaxed whitespace-pre-wrap mb-4`}>
+              <p
+                className={`${textSecondary} leading-relaxed whitespace-pre-wrap mb-4`}
+              >
                 {publication.description}
               </p>
-              
+
               {/* Categoría */}
               <div className="flex items-center gap-2 mt-4">
                 <Tag className="text-[#FF9900]" size={18} />
@@ -325,11 +349,18 @@ const PublicationDetailPage = () => {
 
               {/* Horario de atención (solo para servicios) */}
               {publication.type === "SERVICE" && publication.workingHours && (
-                <div className={`mt-4 p-4 rounded-lg border ${borderClass} bg-amber-50 dark:bg-amber-900/20`}>
+                <div
+                  className={`mt-4 p-4 rounded-lg border ${borderClass} bg-amber-50 dark:bg-amber-900/20`}
+                >
                   <div className="flex items-start gap-3">
-                    <Clock className="text-[#FF9900] flex-shrink-0 mt-0.5" size={20} />
+                    <Clock
+                      className="text-[#FF9900] flex-shrink-0 mt-0.5"
+                      size={20}
+                    />
                     <div>
-                      <p className={`${textPrimary} font-semibold text-sm mb-1`}>
+                      <p
+                        className={`${textPrimary} font-semibold text-sm mb-1`}
+                      >
                         Horario de atención
                       </p>
                       <p className={`${textSecondary} text-sm`}>
@@ -348,7 +379,10 @@ const PublicationDetailPage = () => {
               </h2>
 
               <div className="flex items-start gap-3">
-                <User className="text-[#FF9900] flex-shrink-0 mt-0.5" size={20} />
+                <User
+                  className="text-[#FF9900] flex-shrink-0 mt-0.5"
+                  size={20}
+                />
                 <div>
                   <p className={`${textSecondary} text-sm`}>Vendedor</p>
                   <p className={`${textPrimary} font-medium`}>
