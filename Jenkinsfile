@@ -21,6 +21,7 @@ pipeline {
             steps {
               echo "Construyendo imagen del frontend..."
               sh """ docker build --build-arg VITE_API_URL=${VITE_API_URL}  -t ${DOCKER_IMAGE_TAG} -f ${DOCKER_IMAGE_FILE} . """
+          }
         }
 
         stage('Deploy Frontend Container') {
@@ -36,6 +37,6 @@ pipeline {
                           ${DOCKER_IMAGE_TAG}
                         """
                     }
-                }
+        }
     }
 }
