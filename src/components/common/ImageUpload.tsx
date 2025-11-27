@@ -33,7 +33,7 @@ const ImageUpload = ({
   useEffect(() => {
     if (existingImageUrls.length > 0) {
       setExistingImages(existingImageUrls);
-      
+
       // Notificar al componente padre sobre las imágenes iniciales
       if (onExistingImagesChange) {
         onExistingImagesChange(existingImageUrls);
@@ -43,7 +43,7 @@ const ImageUpload = ({
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    
+
     const totalImages = existingImages.length + images.length + files.length;
     if (totalImages > maxImages) {
       alert(`Solo puedes tener un máximo de ${maxImages} imágenes en total`);
@@ -77,7 +77,7 @@ const ImageUpload = ({
   const handleRemoveExistingImage = (index: number) => {
     const updatedExistingImages = existingImages.filter((_, i) => i !== index);
     setExistingImages(updatedExistingImages);
-    
+
     // Notificar al componente padre sobre el cambio
     if (onExistingImagesChange) {
       onExistingImagesChange(updatedExistingImages);
@@ -89,14 +89,16 @@ const ImageUpload = ({
   };
 
   // Construct full image URL
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
+  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8090";
   const getImageUrl = (imageUrl: string) => {
     // Si ya es una URL completa (Azure Blob Storage), retornarla decodificada
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
       return decodeURIComponent(imageUrl);
     }
     // Si es una ruta relativa, construir la URL con el backend
-    const cleanFileName = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+    const cleanFileName = imageUrl.startsWith("/")
+      ? imageUrl.substring(1)
+      : imageUrl;
     return `${baseUrl}/${cleanFileName}`;
   };
 
@@ -134,8 +136,8 @@ const ImageUpload = ({
             error
               ? "text-red-600 dark:text-red-400"
               : theme === "dark"
-              ? "text-gray-300"
-              : "text-gray-700"
+                ? "text-gray-300"
+                : "text-gray-700"
           }`}
         >
           {totalImages === 0
