@@ -5,6 +5,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Habilitar ARG para recibir API URL
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Copiar solo los archivos necesarios primero (para mejor caché)
 COPY package*.json ./
 
@@ -17,6 +21,8 @@ RUN npm ci --no-audit --no-fund --prefer-offline || \
 COPY . .
 
 # Generar la build optimizada de producción
+# Aquí Vite SÍ recibe la variable
+RUN echo "Building with API = ${VITE_API_URL}"
 RUN npm run build
 
 # =============================================================================
@@ -26,8 +32,8 @@ FROM nginx:1.27-alpine
 
 # Etiquetas de metadatos
 LABEL maintainer="Marketplace Link Team" \
-      description="Frontend de Marketplace Link - React + TypeScript + Vite" \
-      version="1.0"
+    description="Frontend de Marketplace Link - React + TypeScript + Vite" \
+    version="1.0"
 
 # Instalar curl para health checks y limpiar cache
 RUN apk add --no-cache curl && \
@@ -55,7 +61,7 @@ RUN mkdir -p /var/log/nginx /var/cache/nginx /tmp/nginx && \
 
 # Healthcheck para Nginx
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=5 \
-  CMD curl -f http://localhost:80/ || exit 1
+    CMD curl -f http://localhost:80/ || exit 1
 
 # Exponer puerto 80
 EXPOSE 80
